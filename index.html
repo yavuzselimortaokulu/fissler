@@ -1,1 +1,741 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fissler Pişirme Rehberi</title>
+    
+    <!-- Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts --><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
 
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2, h3 {
+            font-family: 'Poppins', sans-serif;
+        }
+        /* Özelleştirilmiş Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+        
+        /* Animasyonlar */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-down {
+            animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3e%3c/path%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+
+            /* YENİ EKLENEN KOD: Yazıların sığmadığında alt satıra kaymasını engeller */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            /* Metnin sığmama durumunda ... ile bitmesini sağlar */
+        }
+
+        /* Bakım modalı için kaydırma çubuğu */
+        #bakimModalContent::-webkit-scrollbar-track {
+            background: #e5e7eb; /* bg-gray-200 */
+        }
+        #bakimModalContent::-webkit-scrollbar-thumb {
+            background: #94a3b8; /* slate-400 */
+        }
+        #bakimModalContent::-webkit-scrollbar-thumb:hover {
+            background: #64748b; /* slate-500 */
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-lg w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+        
+        <!-- HEADER --><div class="bg-gradient-to-r from-blue-900 to-blue-700 p-8 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-24 h-24 bg-white opacity-5 rounded-full -translate-x-10 -translate-y-10"></div>
+            <div class="absolute bottom-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full translate-x-10 -translate-y-10"></div>
+            
+            <div class="relative z-10">
+                <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner border border-white/30">
+                    <i class="fa-solid fa-kitchen-set text-3xl text-white"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-white tracking-tight">Fissler Şefi</h1>
+                <p class="text-blue-100 text-sm mt-2 font-light">Mükemmel pişirme asistanınız</p>
+            </div>
+
+            <!-- YENİ BAKIM BUTONU -->
+            <button id="bakimBtn" class="absolute top-4 right-4 text-white/50 hover:text-white/90 transition-colors p-2 rounded-full" title="Bakım Talimatları">
+                <i class="fa-solid fa-wrench text-xl"></i>
+            </button>
+        </div>
+
+        <div class="p-8 space-y-6">
+            
+            <!-- SEÇİM ALANI --><div class="space-y-5">
+                <!-- 1. Pişirme Tipi --><div class="relative group">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">
+                        <i class="fa-solid fa-fire-burner mr-1 text-orange-500"></i> Pişirme Yöntemi
+                    </label>
+                    <div class="relative">
+                        <select id="pisirmeTipiSelect" class="w-full bg-slate-50 border border-slate-200 text-slate-700 py-3.5 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium cursor-pointer hover:bg-slate-100">
+                            <option value="">Yöntem Seçiniz...</option>
+                            <option value="buharli">♨️ Buharlı Pişirme (Sepet ile)</option>
+                            <option value="sulu">🍲 Sulu Pişirme / Haşlama</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 2. Kategori --><div class="relative group">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">
+                        <i class="fa-solid fa-layer-group mr-1 text-blue-500"></i> Kategori
+                    </label>
+                    <select id="kategoriSelect" disabled class="w-full bg-slate-50 border border-slate-200 text-slate-700 py-3.5 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium">
+                        <option value="">Önce Yöntem Seçiniz...</option>
+                    </select>
+                </div>
+
+                <!-- 3. Ürün --><div class="relative group">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">
+                        <i class="fa-solid fa-carrot mr-1 text-green-500"></i> Ürün
+                    </label>
+                    <select id="urunSelect" disabled class="w-full bg-slate-50 border border-slate-200 text-slate-700 py-3.5 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium">
+                        <option value="">Önce Kategori Seçiniz...</option>
+                    </select>
+                </div>
+
+                <!-- 4. Hazırlık --><div class="relative group">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">
+                        <i class="fa-solid fa-list-check mr-1 text-purple-500"></i> Hazırlık Detayı
+                    </label>
+                    <select id="hazirlikSelect" disabled class="w-full bg-slate-50 border border-slate-200 text-slate-700 py-3.5 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium">
+                        <option value="">Önce Ürün Seçiniz...</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- SONUÇ ALANI (Kartlar) --><div id="sonucAlani" class="hidden fade-in pt-4 border-t border-slate-100 mt-6">
+                
+                <div class="text-center mb-6">
+                    <h2 class="text-lg font-bold text-slate-800" id="sonucSecimBaslik">--</h2>
+                    <div class="h-1 w-16 bg-orange-500 mx-auto rounded-full mt-2"></div>
+                </div>
+
+                <!-- Bilgi Kartları Grid --><div class="grid grid-cols-2 gap-4 mb-6">
+                    <!-- Basınç Kartı --><div class="bg-blue-50 p-4 rounded-2xl border border-blue-100 flex flex-col items-center justify-center text-center">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-2">
+                            <i class="fa-solid fa-gauge-high text-lg"></i>
+                        </div>
+                        <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Basınç</span>
+                        <span id="sonucAyar" class="font-bold text-slate-700 text-sm mt-1">--</span>
+                    </div>
+                    <!-- Süre Kartı --><div class="bg-orange-50 p-4 rounded-2xl border border-orange-100 flex flex-col items-center justify-center text-center">
+                        <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center mb-2">
+                            <i class="fa-regular fa-clock text-lg"></i>
+                        </div>
+                        <span class="text-xs font-bold text-orange-400 uppercase tracking-wider">Süre</span>
+                        <span id="sonucSure" class="font-bold text-slate-700 text-lg mt-1">--</span>
+                    </div>
+                </div>
+
+                <!-- Tarif Kartı --><div class="bg-white border-l-4 border-blue-600 shadow-sm rounded-r-xl p-5 mb-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mt-2 -mr-2 w-16 h-16 bg-blue-50 rounded-full opacity-50"></div>
+                    <h3 class="font-bold text-blue-900 flex items-center mb-2">
+                        <i class="fa-solid fa-book-open mr-2"></i> Hazırlanışı
+                    </h3>
+                    <p id="sonucTarif" class="text-sm text-slate-600 leading-relaxed"></p>
+                </div>
+
+                <!-- İpucu --><div class="flex items-start space-x-3 bg-yellow-50 p-4 rounded-xl border border-yellow-100 mb-6">
+                    <i class="fa-regular fa-lightbulb text-yellow-500 mt-1 flex-shrink-0"></i>
+                    <p id="sonucIpucu" class="text-sm text-slate-600 italic"></p>
+                </div>
+
+                <!-- Sayaç Alanı --><div class="bg-slate-900 rounded-2xl p-6 text-center shadow-lg relative overflow-hidden min-h-[200px] flex flex-col justify-center">
+                    <!-- Background Glow --><div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-blue-500 rounded-full filter blur-3xl opacity-20"></div>
+                    
+                    <!-- Sayaç Göstergesi (Değişken İçerik) -->
+                    <div id="timerDisplay" class="text-5xl font-mono font-bold text-white relative z-10 tracking-wider mb-6 tabular-nums transition-all duration-300">00:00</div>
+                    
+                    <!-- Butonlar -->
+                    <div class="relative z-10">
+                        <button id="startTimerBtn" class="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-green-500/30 transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center">
+                            <i class="fa-solid fa-play mr-2"></i> Zamanlayıcıyı Başlat
+                        </button>
+                        
+                        <button id="stopTimerBtn" class="hidden w-full bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-red-500/30 transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center">
+                            <i class="fa-solid fa-rotate-left mr-2"></i> Sıfırla
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        <!-- Footer --><div class="bg-slate-50 p-4 text-center border-t border-slate-200">
+            <p class="text-xs text-slate-400">© 2025 Fissler Asistanı - Güvenli Pişirme</p>
+        </div>
+    </div>
+
+    <!-- PİŞİRME KONTROL MODALI --><div id="modalOverlay" class="fixed inset-0 z-50 hidden bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 fade-in">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center slide-down border-t-4 border-orange-500">
+            <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 text-orange-500">
+                <i class="fa-solid fa-triangle-exclamation text-3xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-800 mb-2">Kontrol Zamanı</h3>
+            <p id="modalQuestion" class="text-slate-600 mb-6 leading-relaxed">Basınç göstergesi yükseldi mi?</p>
+            
+            <div class="flex space-x-3">
+                <button id="modalHayirBtn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold py-3 px-4 rounded-xl transition-colors">
+                    Hayır, Bekle
+                </button>
+                <button id="modalEvetBtn" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-orange-500/30 transition-colors">
+                    Evet, Başlat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- YENİ BAKIM MODALI --><div id="bakimModalOverlay" class="fixed inset-0 z-50 hidden bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 fade-in">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full slide-down border-t-4 border-blue-500">
+            <div class="p-6 border-b border-slate-200">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-slate-800 flex items-center">
+                        <i class="fa-solid fa-wrench text-blue-600 mr-3"></i>
+                        Fissler Bakım Rehberi
+                    </h3>
+                    <button id="bakimModalKapatBtn" class="text-slate-400 hover:text-slate-600 transition-colors" title="Kapat">
+                        <i class="fa-solid fa-times text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="bakimModalContent" class="p-6 space-y-5 text-sm text-slate-600 max-h-[60vh] overflow-y-auto">
+                <p class="font-medium text-slate-700 text-base">Tencerenizin ömrünü uzatmak ve güvenle kullanmak için bu adımları izleyin:</p>
+                
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h4 class="font-bold text-blue-700 mb-2 text-base">Her Kullanımdan Sonra</h4>
+                    <ul class="list-disc list-inside space-y-2 pl-2">
+                        <li><strong>Tencere ve Kapak:</strong> Ilıdıktan sonra elde veya bulaşık makinesinde yıkayabilirsiniz (sapı ve contayı çıkardıktan sonra).</li>
+                        <li><strong><span class="text-red-600 font-bold">Conta (Lastik):</span></strong> Asla makineye atmayın! Elde yıkayın, kurulayın ve kapağa takmadan, ters çevrilmiş kapağın üzerine serbestçe koyarak saklayın. Bu, contanın ömrünü uzatır.</li>
+                        <li><strong>Kapak Sapı (Valf Bölümü):</strong> Çoğu modelde (Vitavit vb.) sap çıkarılabilir. Çıkarıp elde yıkayın ve valf yuvasının temiz olduğundan emin olun.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h4 class="font-bold text-blue-700 mb-2 text-base">Periyodik Kontroller</h4>
+                    <ul class="list-disc list-inside space-y-2 pl-2">
+                        <li><strong>Emniyet Valfi (Güvenlik Penceresi):</strong> Kapağı ışığa tutarak içinden ışığın geçtiğini (tıkalı olmadığını) kontrol edin. Tıkanmışsa kürdan veya iğne ile nazikçe açın.</li>
+                        <li><strong>Conta Durumu:</strong> Contada çatlak, sertleşme veya renk değişimi varsa yenisiyle değiştirin (Genellikle 1-2 yılda bir).</li>
+                        <li><strong>Pişirme Valfi:</strong> Pişirme ayar düğmesini (valfi) çıkarıp iç mekanizmasının temiz ve hareketli olduğunu kontrol edin.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                    <h4 class="font-bold text-red-700 mb-2 text-base">Önemli Uyarılar</h4>
+                    <ul class="list-disc list-inside space-y-2 pl-2">
+                        <li>Tencereyi asla aşındırıcı (cif, tel fırça) ile temizlemeyin. Limon ve sirke ile parlatabilirsiniz.</li>
+                        <li>Tencereyi yağ/yemekle birlikte uzun süre bekletmeyin, leke yapabilir.</li>
+                        <li>Kapağı asla zorlayarak açmayın veya kapatmayın. Basınç tamamen boşalmadan açılmayacaktır.</li>
+                        <li>Tencereyi asla kapasitesinin 2/3'ünden fazla doldurmayın (özellikle bakliyat gibi köpüren yiyeceklerde 1/2'yi geçmeyin).</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-200 text-right">
+                 <button id="bakimModalKapatBtn2" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2 px-4 rounded-lg transition-colors">
+                    Anladım
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT MANTIĞI (TAMAMI BURADA) --><script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Global AudioContext değişkeni
+            let audioCtx;
+
+            const kategoriIsimleri = {
+                sebze: "Sebzeler",
+                et: "Etler (Kırmızı/Beyaz)",
+                bakliyat: "Bakliyatlar",
+                deniz: "Deniz Ürünleri",
+                tahil: "Tahıllar ve Pilavlar",
+                corba: "Çorbalar", 
+                diger: "Diğer (Kemik Suyu vb.)"
+            };
+
+            const pisirmeVerisi = {
+                buharli: {
+                    sebze: {
+                        "Patates": {
+                            butun: { isim: "Bütün (Orta Boy)", ayar: "1. Halka (Düşük)", sure: "8-10 Dakika", ipucu: "Salata için ideal.", tarif: "Tencerenin dibine 1.5 su bardağı su koyun. Tripodu (ayak) yerleştirin. Bütün patatesleri delikli buhar sepetine koyup tripoda oturtun. Kapağı kapatın." },
+                            iri: { isim: "İri Doğranmış (Parça)", ayar: "1. Halka (Düşük)", sure: "5-6 Dakika", ipucu: "Çatal girecek kıvama gelir.", tarif: "Tencereye 1.5 bardak su ve tripodu ekleyin. Doğranmış patatesleri delikli sepete koyup yerleştirin. Kapağı kilitleyin." },
+                            kup: { isim: "Küp Küp (Diced)", ayar: "1. Halka (Düşük)", sure: "3-4 Dakika", ipucu: "Çok hızlı pişer.", tarif: "Tencereye min. su (1.5 bardak) koyun. Küp patatesleri delikli sepette buharda pişirin." }
+                        },
+                        "Havuç": {
+                            butun: { isim: "Bütün (İnce)", ayar: "1. Halka (Düşük)", sure: "5-6 Dakika", ipucu: "Kalınsa süreyi artırın.", tarif: "Tencereye suyu ve tripodu koyun. Havuçları delikli sepete dizin. Kapağı kapatın." },
+                            iri: { isim: "İri Doğranmış", ayar: "1. Halka (Düşük)", sure: "3-4 Dakika", ipucu: "Buhar sepeti kullanın.", tarif: "Tencereye su ve tripod ekleyin. Havuçları delikli sepete koyup tripoda yerleştirin." },
+                            kup: { isim: "Küp Küp (Diced)", ayar: "1. Halka (Düşük)", sure: "2-3 Dakika", ipucu: "Buhar sepeti kullanın.", tarif: "Tencereye suyu koyun. Sepet içindeki havuçları yerleştirin. Çok kısa sürede pişecektir." }
+                        },
+                        "Kereviz (Kök)": {
+                            iri: { isim: "İri Doğranmış", ayar: "1. Halka (Düşük)", sure: "4-5 Dakika", ipucu: "Kararmaması için limon sıkın.", tarif: "Limonlu suda bekleyen kerevizleri süzüp delikli sepete alın. Tencereye su ve tripodu koyup sepeti yerleştirin." },
+                            kup: { isim: "Küp Küp", ayar: "1. Halka (Düşük)", sure: "2-3 Dakika", ipucu: "Çok çabuk pişer.", tarif: "Tencereye suyu koyun. Küp doğranmış kerevizleri delikli sepete alıp buharda pişirin." }
+                        },
+                        "Pancar": {
+                            butun: { isim: "Bütün (Orta Boy)", ayar: "1. Halka (Düşük)", sure: "20-25 Dakika", ipucu: "Kabuğunu soymadan pişirin.", tarif: "Pancarları iyice yıkayın (soymayın). Tencereye su ve tripod koyun. Pancarları sepete koyup buharda pişirin. Sonra kabuğu kolayca soyulur." },
+                            kup: { isim: "Küp Küp", ayar: "1. Halka (Düşük)", sure: "6-8 Dakika", ipucu: "Rengi suya geçmez.", tarif: "Doğranmış pancarları delikli sepete koyun. Tencereye su ekleyip sepeti yerleştirin." }
+                        },
+                        "Brokoli": {
+                            cicek: { isim: "Çiçeklerine Ayrılmış", ayar: "1. Halka (Düşük)", sure: "1-2 Dakika", ipucu: "Düdük çıkar çıkmaz kapatın.", tarif: "Tencereye su koyun. Brokolileri delikli sepete alın. Basınç oluşur oluşmaz altını kapatın, kendi ısısıyla pişer." }
+                        },
+                        "Karnabahar": {
+                            cicek: { isim: "Çiçeklerine Ayrılmış", ayar: "1. Halka (Düşük)", sure: "2-3 Dakika", ipucu: "Kokusu için suya sirke damlatın.", tarif: "Tencereye su koyun. Karnabaharları delikli sepete koyup buharda 2-3 dakika pişirin." }
+                        },
+                        "Enginar": {
+                            kalp: { isim: "Kalp (Bütün)", ayar: "1. Halka (Düşük)", sure: "4-5 Dakika", ipucu: "Kararmaması için limonlayın.", tarif: "Tencereye su ve tripod koyun. Enginarları delikli sepete dizin. Kapağı kapatın." }
+                        },
+                        "Taze Fasulye": {
+                            normal: { isim: "Bütün / Parça", ayar: "1. Halka (Düşük)", sure: "5-7 Dakika", ipucu: "Canlı yeşil renk kalır.", tarif: "Fasulyeleri delikli sepete koyun. Tencereye su ekleyip sepeti yerleştirin." }
+                        },
+                        "Brüksel Lahanası": {
+                            butun: { isim: "Bütün", ayar: "1. Halka (Düşük)", sure: "3-4 Dakika", ipucu: "Dış yapraklarını temizleyin.", tarif: "Tencereye su koyun. Lahanaları delikli sepete alıp buharda pişirin." }
+                        }
+                    },
+                    deniz: {
+                        "Balık Fileto": {
+                            fileto: { isim: "Levrek, Somon vb.", ayar: "1. Halka (Düşük)", sure: "3-4 Dakika", ipucu: "Yapışmaması için yağlı kağıt serin.", tarif: "Delikli sepetin tabanına yağlı kağıt serin. Balıkları üzerine dizin. Tencereye su koyup sepeti yerleştirin." }
+                        },
+                        "Karides": {
+                            jumbo: { isim: "Jumbo Karides", ayar: "1. Halka (Düşük)", sure: "1-2 Dakika", ipucu: "Rengi dönünce pişmiştir.", tarif: "Tencereye su (aroma için defne yaprağı atabilirsiniz) koyun. Karidesleri delikli sepette buhara koyun." }
+                        }
+                    },
+                    et: {
+                        "Tavuk Göğsü": {
+                            fileto: { isim: "Fileto (Diyetetik)", ayar: "1. Halka (Düşük)", sure: "5-7 Dakika", ipucu: "Baharatlayıp sepete koyun.", tarif: "Tavukları baharatlayın. Delikli sepete yerleştirin. Tencereye su koyup sepeti tripoda oturtun. En sağlıklı yöntemdir." }
+                        }
+                    }
+                },
+                sulu: {
+                    bakliyat: {
+                        "Nohut": {
+                            islatilmis: { isim: "Geceden Islatılmış", ayar: "2. Halka (Yüksek)", sure: "15-18 Dakika", ipucu: "Tuzunu piştikten sonra atın.", tarif: "Islatılmış nohutları süzüp tencereye alın. Üzerini 2 parmak geçecek kadar su ekleyin. Asla Max çizgisini geçmeyin." },
+                            islatilmamis: { isim: "Geceden Islatılmamış", ayar: "2. Halka (Yüksek)", sure: "35-40 Dakika", ipucu: "Süre uzundur, su kontrolü yapın.", tarif: "Nohutları yıkayıp tencereye alın. Bol su ekleyin (nohut suyu çok çeker). Kapağı kapatıp 2. halkayı bekleyin." }
+                        },
+                        "Kuru Fasulye": {
+                            islatilmis: { isim: "Geceden Islatılmış", ayar: "2. Halka (Yüksek)", sure: "15-20 Dakika", ipucu: "Köpüklenmeyi önler.", tarif: "Fasulyeleri ve suyu tencereye koyun. Tencerenin yarısından fazlasını doldurmamaya dikkat edin. Kapağı kapatın." },
+                            islatilmamis: { isim: "Geceden Islatılmamış", ayar: "2. Halka (Yüksek)", sure: "35-40 Dakika", ipucu: "Suyu bol olsun, köpürmeye dikkat.", tarif: "Fasulyeleri yıkayıp tencereye alın. Üzerini bolca geçecek su ekleyin. Kapağı kapatın." }
+                        },
+                        "Yeşil Mercimek": {
+                            yemeklik: { isim: "Geceden Islatılmamış", ayar: "1. Halka (Düşük)", sure: "4-5 Dakika", ipucu: "Kabuk atabilir, düşük basınç önerilir.", tarif: "Mercimekleri yıkayıp tencereye koyun. Suyu ekleyin. Kabuk atmaması için 1. halkada (düşük basınç) pişirilmesi önerilir." }
+                        },
+                        "Barbunya": {
+                            islatilmis: { isim: "Geceden Islatılmış", ayar: "2. Halka (Yüksek)", sure: "15-20 Dakika", ipucu: "Zeytinyağlı için ideal.", tarif: "Barbunyaları tencereye alın. Su, şeker, tuz ve zeytinyağını ekleyin. Kapağı kapatın."},
+                            islatilmamis: { isim: "Geceden Islatılmamış", ayar: "2. Halka (Yüksek)", sure: "30-35 Dakika", ipucu: "Rengi biraz koyulaşabilir.", tarif: "Yıkanmış barbunyaları tencereye alın. Bol su ekleyip pişirin."}
+                        }
+                    },
+                    et: {
+                        "Dana Kavurma": {
+                            kavurma: { isim: "Kendi Yağında (Lokum)", ayar: "2. Halka (Yüksek)", sure: "25-30 Dakika", ipucu: "Tuzunu en son atın sertleşmesin.", tarif: "İç yağını eritip etleri ekleyin ve rengi dönene kadar mühürleyin. Sadece yarım çay bardağı sıcak su ekleyin. Kapağı kapatıp pişirin. Süre bitince kapağı açın, suyu kaldıysa çekene kadar açık ateşte kavurun." },
+                            zeytinyagli: { isim: "Zeytinyağlı (Yumuşak)", ayar: "2. Halka (Yüksek)", sure: "25-30 Dakika", ipucu: "Daha hafif ve yumuşak olur.", tarif: "Tencereye zeytinyağını ekleyip ısıtın. Etleri ekleyip yüksek ateşte mühürleyin. Sadece yarım çay bardağı sıcak su ekleyin. Kapağı kapatıp pişirin. Sonrasında kapağı açıp suyu kalmışsa çektirin." }
+                        },
+                        "Dana Kuşbaşı": {
+                            haslama: { isim: "Haşlama / Yemeklik", ayar: "2. Halka (Yüksek)", sure: "15-20 Dakika", ipucu: "Kefini alırsanız berrak olur.", tarif: "Etleri tencereye alın. Üzerine su ekleyin. Kapağı açıkken kaynatıp kefini (köpüğünü) alın. Sonra kapağı kapatıp basınçlandırın." }
+                        },
+                        "Kuzu İncik": {
+                            muhurlenmis: { isim: "Mühürlenmiş Haşlama", ayar: "2. Halka (Yüksek)", sure: "20-25 Dakika", ipucu: "Lezzeti içine hapsolur.", tarif: "Tencereyi ısıtın, az yağda incikleri mühürleyin (kızartın). Üzerine sıcak su veya et suyu ekleyin. Kapağı kapatın." }
+                        },
+                        "Bütün Tavuk": {
+                            haslama: { isim: "Haşlama (1.5 kg)", ayar: "2. Halka (Yüksek)", sure: "20 Dakika", ipucu: "Suyu çok lezzetli olur.", tarif: "Tüm tavuğu tencereye yerleştirin. Yarısına kadar su doldurun. Sebzeler (soğan, havuç) ekleyebilirsiniz. Kapağı kapatın." }
+                        },
+                         "Tavuk But/Göğüs": {
+                            parca: { isim: "Parça (Kemikli/Kemiksiz)", ayar: "2. Halka (Yüksek)", sure: "6-8 Dakika", ipucu: "Hızlı haşlama.", tarif: "Tavuk parçalarını tencereye koyun. Üzerini geçecek kadar su ekleyin. Kapağı kapatın." }
+                        },
+                    },
+                    diger: {
+                        "Kemik Suyu": {
+                            ilikli: { isim: "İlikli Kemik", ayar: "2. Halka (Yüksek)", sure: "40-50 Dakika", ipucu: "Sirke ekleyin (ilikleri çözer).", tarif: "Kemikleri tencereye koyun. Üzerine su ve 1 kaşık sirke ekleyin. Max çizgisini geçmeyin. Uzun süre pişirin." }
+                        }
+                    },
+                    sebze: {
+                        "Patates": {
+                            butun_haslama: { isim: "Bütün Haşlama (Orta Boy)", ayar: "1. Halka (Düşük)", sure: "7-8 Dakika", ipucu: "Kabuklu haşlama.", tarif: "Yıkanmış patatesleri tencereye koyun. Üzerini geçecek kadar su ve tuz ekleyin. Kapağı kapatın." },
+                            iri_yemeklik: { isim: "İri Doğranmış (Yemeklik)", ayar: "1. Halka (Düşük)", sure: "4-5 Dakika", ipucu: "Sulu yemek.", tarif: "Soğanları kavurun, salça ve patatesleri ekleyin. Üzerini hafif geçecek kadar su koyun." },
+                            kup_yemeklik: { isim: "Küp Küp (Yemeklik)", ayar: "1. Halka (Düşük)", sure: "2-3 Dakika", ipucu: "Hemen pişer.", tarif: "Diğer malzemelerle birlikte tencereye koyun. Az su yeterlidir." }
+                        },
+                         "Kereviz (Kök)": {
+                            iri_yemeklik: { isim: "İri Doğranmış (Zeytinyağlı)", ayar: "1. Halka (Düşük)", sure: "5-6 Dakika", ipucu: "Portakal suyu ekleyin.", tarif: "Kavrulmuş soğan/havuç üzerine kerevizleri ekleyin. Portakal suyu ve su karışımını dökün. Kapağı kapatın." },
+                            kup_yemeklik: { isim: "Küp Küp (Yemeklik)", ayar: "1. Halka (Düşük)", sure: "3-4 Dakika", ipucu: "Yemeğin içinde.", tarif: "Yemeğin suyuyla birlikte pişirin." }
+                        },
+                        "Pırasa": {
+                            iri_yemeklik: { isim: "İri Doğranmış (Zeytinyağlı)", ayar: "1. Halka (Düşük)", sure: "4-5 Dakika", ipucu: "Pirinç de ekleyebilirsiniz.", tarif: "Havuçları kavurun, pırasaları ekleyin. Limon suyu, zeytinyağı ve az su ekleyip kapağı kapatın." }
+                        },
+                        "Patlıcan": {
+                            butun_karniyarik: { isim: "Bütün (Karnıyarıklık)", ayar: "1. Halka (Düşük)", sure: "5-7 Dakika", ipucu: "Az yağlı ve hafif olur.", tarif: "Patlıcanları alacalı soyun. Tencereye dizin. Yarım bardak su ve biraz zeytinyağı gezdirin. Buharla yumuşasın." },
+                            iri_yemeklik: { isim: "İri Doğranmış (Musakka/Türlü)", ayar: "1. Halka (Düşük)", sure: "4-6 Dakika", ipucu: "Dağılmaması için dikkat.", tarif: "Kıymalı harcın üzerine patlıcanları ekleyin. Hiç karıştırmadan suyunu verip kapağı kapatın." }
+                        },
+                        "Kabak": {
+                            iri_yemeklik: { isim: "İri Doğranmış (Yemeklik)", ayar: "1. Halka (Düşük)", sure: "2-3 Dakika", ipucu: "Kendi suyunu salar.", tarif: "Soğan ve domatesle birlikte tencereye koyun. Çok az su (yarım bardak) ekleyin, kabak su salar." }
+                        },
+                        "Taze Fasulye": {
+                            yemeklik: { isim: "Zeytinyağlı / Yemeklik", ayar: "1. Halka (Düşük)", sure: "6-8 Dakika", ipucu: "Soğuturken kapağı açmayın (renk için).", tarif: "Tüm malzemeleri (fasulye, soğan, domates, yağ) çiğden tencereye koyun. Yarım bardak su ekleyip karıştırın. Kapağı kapatın." }
+                        },
+                        "Enginar": {
+                            yemeklik: { isim: "Yemeklik (Zeytinyağlı)", ayar: "1. Halka (Düşük)", sure: "5-6 Dakika", ipucu: "Garnitürlü.", tarif: "Enginarları tencereye dizin. Üzerine garnitürleri, zeytinyağını, limon suyunu ve suyu ekleyin. Kapağı kapatın." }
+                        }
+                    },
+                    tahil: {
+                        "Pirinç": {
+                            pilav: { isim: "Pilav (1e 1.5 su)", ayar: "1. Halka (Düşük)", sure: "6-7 Dakika", ipucu: "Basıncı hemen boşaltın.", tarif: "Pirinci yağda kavurun. 1 bardak pirince 1.5 bardak sıcak su ve tuz ekleyin. Kapağı kapatın. Süre bitince basıncı hemen tahliye edin." }
+                        },
+                        "Bulgur": {
+                            pilav: { isim: "Pilav (1e 1.5 su)", ayar: "1. Halka (Düşük)", sure: "4-5 Dakika", ipucu: "Demlenmeye bırakın.", tarif: "Bulguru kavurun veya direkt suya atın. 1'e 1.5 oranında su koyun. Piştikten sonra kapağı açmadan 10 dk dinlendirin." }
+                        },
+                        "Aşurelik Buğday": {
+                            islatilmamis: { isim: "Islatılmamış", ayar: "2. Halka (Yüksek)", sure: "12-15 Dakika", ipucu: "Çok su çeker.", tarif: "Buğdayı yıkayıp tencereye alın. Üzerini 4-5 parmak geçecek kadar bol su koyun. Kapağı kapatın." }
+                        }
+                    },
+                    corba: {
+                        "Mercimek Çorbası": {
+                            normal: { isim: "Kırmızı Mercimek", ayar: "1. Halka (Düşük)", sure: "3-4 Dakika", ipucu: "Blenderdan geçirin.", tarif: "Mercimek, soğan, patates ve suyu tencereye koyun. Kapağı kapatın. Pişince blenderdan geçirin." }
+                        },
+                        "Ezogelin Çorbası": {
+                            normal: { isim: "Normal (Bulgurlu)", ayar: "1. Halka (Düşük)", sure: "5-7 Dakika", ipucu: "Dibine tutabilir, iyi karıştırın.", tarif: "Yağda nane ve salçayı yakın. Yıkanmış bakliyatları (mercimek, bulgur, pirinç) ve suyu ekleyip karıştırın. Kapağı kapatın." }
+                        },
+                        "Yayla Çorbası (Pirinçli)": {
+                            pirinc_haslama: { isim: "Pirinç Haşlama (Terbiyesiz)", ayar: "1. Halka (Düşük)", sure: "6-7 Dakika", ipucu: "Yoğurt kesilmesin diye sonra eklenir.", tarif: "Pirinçleri suyla birlikte tencereye alıp haşlayın. Tencereyi açtıktan sonra ayrı bir yerde hazırladığınız yoğurtlu terbiyeyi yavaşça ekleyip kaynatın." }
+                        },
+                        "Tavuk Çorbası (Şehriyeli)": {
+                            sehriyeli: { isim: "Şehriyeli (Pişmiş Tavukla)", ayar: "1. Halka (Düşük)", sure: "1-2 Dakika", ipucu: "Tavuk suyuyla.", tarif: "Tavuk suyunu kaynatın. Didiklenmiş tavukları ve şehriyeyi atın. Kapağı kapatıp düdük öter ötmez altını kapatın." }
+                        },
+                        "Sebze Çorbası (Püre)": {
+                            purelik: { isim: "Pürelik Sebzeler", ayar: "1. Halka (Düşük)", sure: "5-7 Dakika", ipucu: "Kremalı.", tarif: "İri doğranmış kabak, havuç, patates ve soğanı tencereye alın. Üzerine su ekleyin. Pişince blender yapıp krema ekleyin." }
+                        },
+                        "İşkembe Çorbası": {
+                            iskembe_haslama: { isim: "İşkembe Haşlama (Doğranmış)", ayar: "2. Halka (Yüksek)", sure: "35-45 Dakika", ipucu: "Sirkeli suda bekletin.", tarif: "Güzelce temizlenmiş işkembeyi tencereye alın. Su ekleyin. Piştikten sonra ayrı bir tencerede terbiyesini yapın." }
+                        },
+                        "Kelle Paça Çorbası": {
+                            paca_haslama: { isim: "Paça Eti Haşlama", ayar: "2. Halka (Düşük)", sure: "40-50 Dakika", ipucu: "Sarımsaklı sosla.", tarif: "Etleri/kemiği tencereye alın. Bol su ekleyin. Piştikten sonra etleri didikleyin ve suyuna geri ekleyin." }
+                        }
+                    }
+                }
+            };
+
+            // --- ELEMENT SEÇİMLERİ ---
+            const pisirmeTipiSelect = document.getElementById("pisirmeTipiSelect");
+            const kategoriSelect = document.getElementById("kategoriSelect");
+            const urunSelect = document.getElementById("urunSelect");
+            const hazirlikSelect = document.getElementById("hazirlikSelect");
+            const sonucAlani = document.getElementById("sonucAlani");
+            const sonucSecimBaslik = document.getElementById("sonucSecimBaslik"); 
+            const sonucAyar = document.getElementById("sonucAyar");
+            const sonucSure = document.getElementById("sonucSure");
+            const sonucIpucu = document.getElementById("sonucIpucu");
+            const sonucTarif = document.getElementById("sonucTarif"); 
+
+            // Sayaç
+            const timerDisplay = document.getElementById("timerDisplay");
+            const startTimerBtn = document.getElementById("startTimerBtn");
+            const stopTimerBtn = document.getElementById("stopTimerBtn");
+
+            // Pişirme Modalı
+            const modalOverlay = document.getElementById("modalOverlay");
+            const modalQuestion = document.getElementById("modalQuestion");
+            const modalEvetBtn = document.getElementById("modalEvetBtn");
+            const modalHayirBtn = document.getElementById("modalHayirBtn");
+
+            // --- YENİ BAKIM MODALI ELEMENTLERİ ---
+            const bakimBtn = document.getElementById("bakimBtn");
+            const bakimModalOverlay = document.getElementById("bakimModalOverlay");
+            const bakimModalKapatBtn = document.getElementById("bakimModalKapatBtn");
+            const bakimModalKapatBtn2 = document.getElementById("bakimModalKapatBtn2"); // Footer butonu
+
+            let timerInterval = null; 
+            let totalSeconds = 0;
+            let currentPressureSetting = ""; 
+
+            // --- OLAY DİNLEYİCİLERİ ---
+
+            pisirmeTipiSelect.addEventListener("change", function() {
+                const secilenTip = this.value; 
+                resetSelect(kategoriSelect, "Önce Pişirme Tipi Seçin");
+                resetSelect(urunSelect, "Önce Kategori Seçin");
+                resetSelect(hazirlikSelect, "Önce Ürün Seçin");
+                sonucAlani.classList.add("hidden");
+                stopTimer();
+
+                if (secilenTip) {
+                    kategoriSelect.disabled = false;
+                    kategoriSelect.innerHTML = '<option value="">Kategori Seçiniz...</option>';
+                    const kategoriler = Object.keys(pisirmeVerisi[secilenTip]);
+                    kategoriler.forEach(function(kategoriKey) {
+                        const option = document.createElement("option");
+                        option.value = kategoriKey; 
+                        option.textContent = kategoriIsimleri[kategoriKey] || kategoriKey; 
+                        kategoriSelect.appendChild(option);
+                    });
+                }
+            });
+
+            kategoriSelect.addEventListener("change", function() {
+                const secilenTip = pisirmeTipiSelect.value;
+                const secilenKategori = this.value;
+                resetSelect(urunSelect, "Önce Kategori Seçin");
+                resetSelect(hazirlikSelect, "Önce Ürün Seçin");
+                sonucAlani.classList.add("hidden");
+                stopTimer();
+
+                if (secilenKategori) {
+                    urunSelect.disabled = false;
+                    urunSelect.innerHTML = '<option value="">Ürün Seçiniz...</option>';
+                    const urunler = Object.keys(pisirmeVerisi[secilenTip][secilenKategori]);
+                    urunler.forEach(function(urunAdi) {
+                        const option = document.createElement("option");
+                        option.value = urunAdi;
+                        option.textContent = urunAdi;
+                        urunSelect.appendChild(option);
+                    });
+                }
+            });
+
+            urunSelect.addEventListener("change", function() {
+                const secilenTip = pisirmeTipiSelect.value;
+                const secilenKategori = kategoriSelect.value;
+                const secilenUrun = this.value;
+                resetSelect(hazirlikSelect, "Önce Ürün Seçin");
+                sonucAlani.classList.add("hidden");
+                stopTimer();
+
+                if (secilenUrun) {
+                    hazirlikSelect.disabled = false;
+                    hazirlikSelect.innerHTML = '<option value="">Hazırlık Detayı Seçiniz...</option>';
+                    const hazirlikSecenekleri = pisirmeVerisi[secilenTip][secilenKategori][secilenUrun];
+                    Object.keys(hazirlikSecenekleri).forEach(function(hazirlikKey) {
+                        const option = document.createElement("option");
+                        option.value = hazirlikKey; 
+                        option.textContent = hazirlikSecenekleri[hazirlikKey].isim; 
+                        hazirlikSelect.appendChild(option);
+                    });
+                }
+            });
+
+            hazirlikSelect.addEventListener("change", function() {
+                stopTimer(); 
+                const secilenTip = pisirmeTipiSelect.value;
+                const secilenKategori = kategoriSelect.value;
+                const secilenUrun = urunSelect.value;
+                const secilenHazirlik = this.value; 
+
+                if (secilenHazirlik) {
+                    const sonuc = pisirmeVerisi[secilenTip][secilenKategori][secilenUrun][secilenHazirlik];
+                    const secilenHazirlikMetni = this.options[this.selectedIndex].text;
+                    
+                    sonucSecimBaslik.textContent = `${secilenUrun} - ${secilenHazirlikMetni}`;
+                    sonucAyar.textContent = sonuc.ayar;
+                    sonucSure.textContent = sonuc.sure;
+                    sonucIpucu.textContent = sonuc.ipucu;
+                    sonucTarif.textContent = sonuc.tarif;
+
+                    totalSeconds = parseTimeToSeconds(sonuc.sure);
+                    currentPressureSetting = sonuc.ayar; 
+                    
+                    // Timer display'i sıfırla (büyük font)
+                    timerDisplay.className = "text-5xl font-mono font-bold text-white relative z-10 tracking-wider mb-6 tabular-nums transition-all duration-300";
+                    timerDisplay.innerHTML = ""; // Önceki emojiyi temizle
+                    timerDisplay.textContent = formatTime(totalSeconds);
+                    
+                    sonucAlani.classList.remove("hidden");
+                    sonucAlani.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    sonucAlani.classList.add("hidden");
+                }
+            });
+
+            // --- SAYAÇ VE PİŞİRME MODALI İŞLEMLERİ ---
+            
+            function initAudio() {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+            }
+
+            startTimerBtn.addEventListener("click", function() {
+                const halkaNumarasi = currentPressureSetting.split('.')[0] || "Gerekli"; 
+                modalQuestion.textContent = `Tencerenizdeki '${halkaNumarasi}. çizgiyi' (basınç göstergesini) gördünüz mü?`;
+                modalOverlay.classList.remove("hidden");
+            });
+
+            modalEvetBtn.addEventListener("click", function() {
+                initAudio();
+                modalOverlay.classList.add("hidden");
+                startTimerBtn.classList.add("hidden");
+                stopTimerBtn.classList.remove("hidden");
+                
+                if (timerInterval) clearInterval(timerInterval); 
+                timerInterval = setInterval(updateTimer, 1000);
+            });
+
+            modalHayirBtn.addEventListener("click", function() {
+                modalOverlay.classList.add("hidden");
+            });
+
+            stopTimerBtn.addEventListener("click", function() {
+                stopTimer(); 
+            });
+
+            // --- YENİ BAKIM MODALI İŞLEMLERİ ---
+
+            function openBakimModal() {
+                bakimModalOverlay.classList.remove("hidden");
+            }
+            function closeBakimModal() {
+                bakimModalOverlay.classList.add("hidden");
+            }
+
+            bakimBtn.addEventListener("click", openBakimModal);
+            bakimModalKapatBtn.addEventListener("click", closeBakimModal);
+            bakimModalKapatBtn2.addEventListener("click", closeBakimModal);
+
+            // Modalın dışına tıklayınca kapat
+            bakimModalOverlay.addEventListener("click", function(e) {
+                if (e.target === bakimModalOverlay) {
+                    closeBakimModal();
+                }
+            });
+
+
+            // --- SAYAÇ FONKSİYONLARI ---
+
+            function updateTimer() {
+                if (totalSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    
+                    timerDisplay.className = "relative z-10 transition-all duration-300 text-center mb-4 pt-2";
+                    timerDisplay.innerHTML = `
+                        <div class="flex flex-col items-center animate-bounce">
+                            <span class="text-6xl mb-2">🍲</span>
+                            <span class="text-3xl font-bold text-green-400" style="font-family: 'Poppins', sans-serif;">AFİYET OLSUN!</span>
+                        </div>
+                    `;
+                    
+                    playAlarm();
+                    stopTimerBtn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Kapat';
+                    return;
+                }
+                totalSeconds--; 
+                timerDisplay.textContent = formatTime(totalSeconds);
+            }
+
+            function stopTimer() {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                startTimerBtn.classList.remove("hidden");
+                stopTimerBtn.classList.add("hidden");
+                stopTimerBtn.innerHTML = '<i class="fa-solid fa-rotate-left mr-2"></i> Sıfırla';
+                
+                timerDisplay.className = "text-5xl font-mono font-bold text-white relative z-10 tracking-wider mb-6 tabular-nums transition-all duration-300";
+                timerDisplay.innerHTML = "";
+                
+                const secilenTip = pisirmeTipiSelect.value;
+                const secilenKategori = kategoriSelect.value;
+                const secilenUrun = urunSelect.value;
+                const secilenHazirlik = hazirlikSelect.value;
+
+                if (secilenTip && secilenKategori && secilenUrun && secilenHazirlik) {
+                    const sonuc = pisirmeVerisi[secilenTip][secilenKategori][secilenUrun][secilenHazirlik];
+                    totalSeconds = parseTimeToSeconds(sonuc.sure);
+                    timerDisplay.textContent = formatTime(totalSeconds);
+                } else {
+                    timerDisplay.textContent = "00:00";
+                }
+            }
+
+            function parseTimeToSeconds(timeString) {
+                const match = timeString.match(/(\d+)/); 
+                if (match) {
+                    return parseInt(match[1], 10) * 60; 
+                }
+                return 0;
+            }
+
+            function formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            
+            function playAlarm() {
+                if (!audioCtx) return;
+
+                const duration = 5; 
+                const startTime = audioCtx.currentTime;
+                const endTime = startTime + duration;
+                
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                oscillator.type = 'square'; 
+                oscillator.frequency.setValueAtTime(900, startTime);
+
+                const volume = 0.2;
+                
+                for (let i = 0; i < duration * 2; i++) { 
+                    let time = startTime + i * 0.5;
+                    gainNode.gain.setValueAtTime(volume, time);
+                    gainNode.gain.setValueAtTime(0, time + 0.2); 
+                }
+                
+                gainNode.gain.setValueAtTime(0, endTime);
+                
+                oscillator.start(startTime);
+                oscillator.stop(endTime);
+            }
+
+            function resetSelect(selectElement, defaultText) {
+                selectElement.innerHTML = "";
+                const defaultOption = document.createElement("option");
+                defaultOption.value = "";
+                defaultOption.textContent = defaultText;
+                selectElement.appendChild(defaultOption);
+                selectElement.disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>
