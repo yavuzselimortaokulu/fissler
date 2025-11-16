@@ -50,6 +50,7 @@
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
+        /* Açılır Menü Ok İkonu */
         select {
             -webkit-appearance: none;
             -moz-appearance: none;
@@ -58,7 +59,6 @@
             background-repeat: no-repeat;
             background-position: right 1rem center;
             background-size: 1em;
-            /* Önceki CSS (ellipsis) kodu mobil tarayıcılarda tutarlı çalışmadığı için kaldırıldı. */
         }
 
         /* Bakım modalı için kaydırma çubuğu */
@@ -105,8 +105,8 @@
                     <div class="relative">
                         <select id="pisirmeTipiSelect" class="w-full bg-slate-50 border border-slate-200 text-slate-700 py-3.5 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium cursor-pointer hover:bg-slate-100">
                             <option value="">Yöntem Seçiniz...</option>
-                            <!-- YAZI KISALTILDI -->
-                            <option value="buharli">Buharlı Pişirme / Sepetle</option>
+                            <!-- YAZI KISALTILDI (EMOJİLER KALDIRILDI) -->
+                            <option value="buharli">Buharlı Pişirme/Sepetle</option>
                             <option value="sulu">Sulu Pişirme / Haşlama</option>
                         </select>
                     </div>
@@ -199,7 +199,7 @@
         </div>
         
         <!-- Footer --><div class="bg-slate-50 p-4 text-center border-t border-slate-200">
-            <p class="text-xs text-slate-400">© 2025 Fissler Asistanı</p>
+            <p class="text-xs text-slate-400">© 2025 Fissler Asistanı - Güvenli Pişirme</p>
         </div>
     </div>
 
@@ -291,7 +291,7 @@
                 diger: "Diğer (Kemik Suyu vb.)"
             };
 
-            // VERİ TABANI - Tüm metinler mobil için kısaltıldı
+            // VERİ TABANI
             const pisirmeVerisi = {
                 buharli: {
                     sebze: {
@@ -380,7 +380,7 @@
                         },
                         "Köy Tavuğu": {
                             haslama: { isim: "Bütün (Haşlama)", ayar: "2. Halka (Yüksek)", sure: "35-40 Dakika", ipucu: "Sert etlidir, normal tavuktan geç pişer.", tarif: "Temizlenmiş köy tavuğunu tencereye alın. Üzerini geçecek kadar su, tane karabiber ve bir soğan ekleyin. Kapağı kapatın." },
-                            parcalanmis: { isim: "Parçalanmış (Haşlama)", ayar: "2. Halka (Yüksek)", sure: "30-35 Dakika", ipucu: "Parçalar daha hızlı pişer, suyunun lezzeti için ideal.", tarif: "Köy tavuğunu parçalara ayırıp tencereye alın. Üzerini geçecek kadar su, tane karabiber ve bir soğan ekleyin. Kapağı kapatın." }
+                            parcalanmis: { isim: "Parçalanmış", ayar: "2. Halka (Yüksek)", sure: "30-35 Dakika", ipucu: "Parçalar daha hızlı pişer, suyunun lezzeti için ideal.", tarif: "Köy tavuğunu parçalara ayırıp tencereye alın. Üzerini geçecek kadar su, tane karabiber ve bir soğan ekleyin. Kapağı kapatın." }
                         }
                     },
                     diger: {
@@ -475,15 +475,19 @@
             const modalEvetBtn = document.getElementById("modalEvetBtn");
             const modalHayirBtn = document.getElementById("modalHayirBtn");
 
-            // --- YENİ BAKIM MODALI ELEMENTLERİ ---
+            // Bakım Modalı
             const bakimBtn = document.getElementById("bakimBtn");
             const bakimModalOverlay = document.getElementById("bakimModalOverlay");
             const bakimModalKapatBtn = document.getElementById("bakimModalKapatBtn");
-            const bakimModalKapatBtn2 = document.getElementById("bakimModalKapatBtn2"); // Footer butonu
+            const bakimModalKapatBtn2 = document.getElementById("bakimModalKapatBtn2");
 
+            // --- YENİ SAYAÇ DEĞİŞKENLERİ ---
             let timerInterval = null; 
-            let totalSeconds = 0;
+            let endTime = 0; // Bitiş zamanını (timestamp) tutar
+            let totalDurationInSeconds = 0; // Orijinal süreyi (saniye) tutar
             let currentPressureSetting = ""; 
+            let isTimerRunning = false;
+            let hasFinished = false; // Alarmın tekrar tekrar çalmasını engellemek için
 
             // --- OLAY DİNLEYİCİLERİ ---
 
@@ -567,13 +571,12 @@
                     sonucIpucu.textContent = sonuc.ipucu;
                     sonucTarif.textContent = sonuc.tarif;
 
-                    totalSeconds = parseTimeToSeconds(sonuc.sure);
+                    totalDurationInSeconds = parseTimeToSeconds(sonuc.sure); // Orijinal süreyi sakla
                     currentPressureSetting = sonuc.ayar; 
                     
-                    // Timer display'i sıfırla (büyük font)
                     timerDisplay.className = "text-5xl font-mono font-bold text-white relative z-10 tracking-wider mb-6 tabular-nums transition-all duration-300";
-                    timerDisplay.innerHTML = ""; // Önceki emojiyi temizle
-                    timerDisplay.textContent = formatTime(totalSeconds);
+                    timerDisplay.innerHTML = "";
+                    timerDisplay.textContent = formatTime(totalDurationInSeconds);
                     
                     sonucAlani.classList.remove("hidden");
                     sonucAlani.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -588,7 +591,6 @@
                 if (!audioCtx) {
                     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 }
-                // Gizli bir boş ses çalarak tarayıcı iznini al (iOS/Safari için kritik)
                 if (audioCtx.state === 'suspended') {
                     audioCtx.resume();
                     const buffer = audioCtx.createBuffer(1, 1, 22050);
@@ -611,8 +613,15 @@
                 startTimerBtn.classList.add("hidden");
                 stopTimerBtn.classList.remove("hidden");
                 
+                // YENİ MANTIK: Bitiş zamanı hedefle
+                endTime = Date.now() + totalDurationInSeconds * 1000;
+                isTimerRunning = true;
+                hasFinished = false; // Zamanlayıcıyı yeniden başlat
+                
                 if (timerInterval) clearInterval(timerInterval); 
-                timerInterval = setInterval(updateTimer, 1000);
+                // Sayacı daha sık güncelleyerek (örn: 100ms) arka plandan dönüldüğünde
+                // kalan süreyi daha hızlı yakalamasını sağlıyoruz.
+                timerInterval = setInterval(updateTimer, 100); 
             });
 
             modalHayirBtn.addEventListener("click", function() {
@@ -623,7 +632,7 @@
                 stopTimer(); 
             });
 
-            // --- YENİ BAKIM MODALI İŞLEMLERİ ---
+            // --- BAKIM MODALI İŞLEMLERİ ---
 
             function openBakimModal() {
                 bakimModalOverlay.classList.remove("hidden");
@@ -635,41 +644,55 @@
             bakimBtn.addEventListener("click", openBakimModal);
             bakimModalKapatBtn.addEventListener("click", closeBakimModal);
             bakimModalKapatBtn2.addEventListener("click", closeBakimModal);
-
-            // Modalın dışına tıklayınca kapat
             bakimModalOverlay.addEventListener("click", function(e) {
                 if (e.target === bakimModalOverlay) {
                     closeBakimModal();
                 }
             });
 
-
-            // --- SAYAÇ FONKSİYONLARI ---
+            // --- SAYAÇ FONKSİYONLARI (YENİLENDİ) ---
 
             function updateTimer() {
-                if (totalSeconds <= 0) {
-                    clearInterval(timerInterval);
+                if (!isTimerRunning) return; // Çalışmıyorsa güncelleme
+
+                const remainingMilliseconds = endTime - Date.now();
+                let remainingSeconds = Math.round(remainingMilliseconds / 1000);
+
+                if (remainingSeconds <= 0) {
+                    remainingSeconds = 0; // Negatif gösterme
                     
-                    // DÜZELTME: Afiyet Olsun görünümü
-                    timerDisplay.className = "relative z-10 transition-all duration-300 text-center mb-4 pt-2";
-                    timerDisplay.innerHTML = `
-                        <div class="flex flex-col items-center animate-bounce">
-                            <span class="text-6xl mb-2">🍲</span>
-                            <span class="text-3xl font-bold text-green-400" style="font-family: 'Poppins', sans-serif;">AFİYET OLSUN!</span>
-                        </div>
-                    `;
-                    
-                    playAlarm(10); // 10 saniyelik alarm
-                    stopTimerBtn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Kapat';
-                    return;
+                    if (!hasFinished) { // Alarmın sadece bir kez çalmasını sağla
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        isTimerRunning = false;
+                        hasFinished = true; // Bitti olarak işaretle
+                        
+                        timerDisplay.className = "relative z-10 transition-all duration-300 text-center mb-4 pt-2";
+                        timerDisplay.innerHTML = `
+                            <div class="flex flex-col items-center animate-bounce">
+                                <span class="text-6xl mb-2">🍲</span>
+                                <span class="text-3xl font-bold text-green-400" style="font-family: 'Poppins', sans-serif;">AFİYET OLSUN!</span>
+                            </div>
+                        `;
+                        
+                        playAlarm(10); // 10 saniyelik alarm
+                        stopTimerBtn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Kapat';
+                    }
                 }
-                totalSeconds--; 
-                timerDisplay.textContent = formatTime(totalSeconds);
+                
+                // Sadece isTimerRunning true ise ve bitmemişse zamanı güncelle
+                if (isTimerRunning && !hasFinished) {
+                    timerDisplay.textContent = formatTime(remainingSeconds);
+                }
             }
 
             function stopTimer() {
                 clearInterval(timerInterval);
                 timerInterval = null;
+                isTimerRunning = false;
+                hasFinished = false;
+                endTime = 0;
+                
                 startTimerBtn.classList.remove("hidden");
                 stopTimerBtn.classList.add("hidden");
                 stopTimerBtn.innerHTML = '<i class="fa-solid fa-rotate-left mr-2"></i> Sıfırla';
@@ -677,6 +700,7 @@
                 timerDisplay.className = "text-5xl font-mono font-bold text-white relative z-10 tracking-wider mb-6 tabular-nums transition-all duration-300";
                 timerDisplay.innerHTML = "";
                 
+                // Seçili olan son süreyi bul ve ekrana yaz
                 const secilenTip = pisirmeTipiSelect.value;
                 const secilenKategori = kategoriSelect.value;
                 const secilenUrun = document.getElementById("urunSelect").value;
@@ -684,15 +708,16 @@
 
                 if (secilenTip && secilenKategori && secilenUrun && secilenHazirlik) {
                     const sonuc = pisirmeVerisi[secilenTip][secilenKategori][secilenUrun][secilenHazirlik];
-                    totalSeconds = parseTimeToSeconds(sonuc.sure);
-                    timerDisplay.textContent = formatTime(totalSeconds);
+                    totalDurationInSeconds = parseTimeToSeconds(sonuc.sure); // Orijinal süreyi tekrar ayarla
+                    timerDisplay.textContent = formatTime(totalDurationInSeconds);
                 } else {
                     timerDisplay.textContent = "00:00";
                 }
             }
 
             function parseTimeToSeconds(timeString) {
-                const match = timeString.match(/(\d+)/); 
+                // "8-10 Dakika" gibi bir string'i parse eder
+                const match = timeString.match(/(\d+)/); // Genellikle ilk sayıyı alırız (örn: 8)
                 if (match) {
                     return parseInt(match[1], 10) * 60; 
                 }
@@ -719,23 +744,21 @@
                 gainNode.connect(audioCtx.destination);
                 
                 oscillator.type = 'square'; 
-                oscillator.frequency.setValueAtTime(900, startTime); // Yüksek "Bip" sesi
+                oscillator.frequency.setValueAtTime(900, startTime);
 
-                const volume = 0.2; // Ses seviyesi
+                const volume = 0.2;
                 
-                // Kesik kesik alarm sesi oluşturma
-                for (let i = 0; i < duration * 2.5; i++) { // Sıklığı artır
-                    let time = startTime + i * 0.4; // Her 0.4 saniyede bir
+                for (let i = 0; i < duration * 2.5; i++) { 
+                    let time = startTime + i * 0.4;
                     if (time >= endTime) break;
                     gainNode.gain.setTargetAtTime(volume, time, 0.01);
-                    gainNode.gain.setTargetAtTime(0, time + 0.15, 0.01); // Sesi daha kısa tut
+                    gainNode.gain.setTargetAtTime(0, time + 0.15, 0.01);
                 }
                 
-                // Sesi yavaşça azalt (isteğe bağlı)
                 gainNode.gain.setTargetAtTime(0, endTime - 0.5, 0.1);
                 
                 oscillator.start(startTime);
-                oscillator.stop(endTime + 0.1); // En sonda durdur
+                oscillator.stop(endTime + 0.1);
             }
 
             function resetSelect(selectElement, defaultText) {
@@ -746,6 +769,13 @@
                 selectElement.appendChild(defaultOption);
                 selectElement.disabled = true;
             }
+
+            // Sayfa tekrar görünür olduğunda zamanlayıcıyı senkronize et
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible' && isTimerRunning) {
+                    updateTimer(); // Kalan süreyi anında güncelle
+                }
+            });
         });
     </script>
 </body>
